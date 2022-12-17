@@ -11,11 +11,40 @@ const userSchema = new mongoose.Schema({
     require: true,
     min: 6
   },
+  avatar: {
+    type: String,
+    default: null
+  },
   birthday: {
     type: String
   },
-  friends: [],
-  posts: [],
+  friends: [
+    {
+      _id: {
+        type: String,
+        required: true
+      },
+      login: {
+        type: String
+      }
+    }
+  ],
+  posts: [
+    {
+      _id: {
+        type: String
+      },
+      title: {
+        type: String
+      },
+      image: {
+        type: String
+      },
+      content: {
+        type: String
+      }
+    }
+  ],
   role: {
     type: String,
     default: 'USER'
