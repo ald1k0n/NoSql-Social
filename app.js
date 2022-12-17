@@ -2,7 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const passport = require('passport');
-
+const cookieParser = require('cookie-parser');
+const { cookieJwtAuth } = require('./middleware/cookieJwtAuth');
 // Routes
 const auth = require('./controller/auth')
 
@@ -14,6 +15,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 app.options("*", cors());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"))
 app.use(passport.initialize());
@@ -21,10 +23,8 @@ require('./middleware/passport')(passport)
 
 // routes
 app.use('/auth', auth);
-// ! для защиты ссылок используем passport app.get('/', passport.authenticate('jwt', {session: false}), ()=>{})
-// так как пользователь не вошел у него не будет доступа к данным путям
 
-app.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
+app.get('/', cookieJwtAuth, (req, res) => {
   res.status(200).json("Test token auth")
 })
 app.listen(8080, () => console.log("Server started"))

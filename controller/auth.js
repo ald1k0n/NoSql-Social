@@ -45,10 +45,13 @@ app.post('/login', async (req, res) => {
         friends: candidate.friends,
         posts: candidate.posts,
         role: candidate.role
-      }, 'socialNetwork', {
-        expiresIn: 684_000
-      });
-      res.status(200).json({ token: `Bearer ${token}` });
+      }, 'socialNetwork', { expiresIn: '1h' });
+
+      res.status(200).cookie("token", token, {
+        httpOnly: true
+      }).json({ message: token })
+
+      // res.status(200).json({ token: `Bearer ${token}` });
     } else {
       res.status(401).json({ message: "Пароли не совпадают" });
     }
