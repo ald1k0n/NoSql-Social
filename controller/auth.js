@@ -51,7 +51,6 @@ app.post('/login', async (req, res) => {
         httpOnly: true
       }).json({ message: token })
 
-      // res.status(200).json({ token: `Bearer ${token}` });
     } else {
       res.status(401).json({ message: "Пароли не совпадают" });
     }
@@ -61,5 +60,15 @@ app.post('/login', async (req, res) => {
     });
   }
 });
+
+app.get('/getMe', (req, res) => {
+  const token = req.cookies.token
+  const decodedToken = jwt.decode(token, {
+    complete: true
+  });
+  const { payload } = decodedToken;
+  const { login, id, friends, posts, role } = payload;
+  res.json({ login, id, friends, posts, role })
+})
 
 module.exports = app;
