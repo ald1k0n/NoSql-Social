@@ -19,28 +19,11 @@ const userSchema = new mongoose.Schema({
     type: String
   },
   friends: [
-    {
-      _id: {
-        type: String,
-        required: true
-      },
-      login: {
-        type: String
-      }
-    }
+
   ],
   posts: [
     {
       _id: {
-        type: String
-      },
-      title: {
-        type: String
-      },
-      image: {
-        type: String
-      },
-      content: {
         type: String
       }
     }

@@ -2,6 +2,7 @@ const User = require('../db/userSchemas');
 const jwt = require('jsonwebtoken');
 const bcryptjs = require('bcryptjs');
 const express = require('express');
+const { cookieJwtAuth } = require('../middleware/cookieJwtAuth');
 
 const app = express();
 
@@ -24,7 +25,7 @@ app.post('/register', async (req, res) => {
 
     try {
       await user.save();
-      res.status(204);
+      res.status(200).json({ message: "Успешно создан аккаунт" });
     }
     catch (err) {
       res.status(400).json({ message: err })
@@ -61,7 +62,7 @@ app.post('/login', async (req, res) => {
   }
 });
 
-app.get('/getMe', (req, res) => {
+app.get('/getMe', cookieJwtAuth, (req, res) => {
   const token = req.cookies.token
   const decodedToken = jwt.decode(token, {
     complete: true

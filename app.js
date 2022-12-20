@@ -1,11 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-// const passport = require('passport');
 const cookieParser = require('cookie-parser');
 const { cookieJwtAuth } = require('./middleware/cookieJwtAuth');
+
 // Routes
 const auth = require('./controller/auth')
+const post = require('./controller/post');
+const userDto = require('./controller/user');
 
 mongoose.connect('mongodb://localhost:27017/social').then(() => console.log("Подключен")).catch(err => console.log(err))
 
@@ -17,15 +19,16 @@ app.use(cors());
 app.options("*", cors());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static("public"))
-// app.use(passport.initialize());
-// require('./middleware/passport')(passport)
+app.use(express.static("public/uploads"));
 
 // routes
 app.use('/auth', auth);
+app.use('/posts', post)
+app.use('/user', userDto);
 
 app.get('/', cookieJwtAuth, (req, res) => {
   res.status(200).json(req.cookies['token'])
 });
+
 
 app.listen(8080, () => console.log("Server started"))
