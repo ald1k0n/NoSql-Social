@@ -21,13 +21,7 @@ const userSchema = new mongoose.Schema({
   friends: [
 
   ],
-  posts: [
-    {
-      _id: {
-        type: String
-      }
-    }
-  ],
+
   role: {
     type: String,
     default: 'USER'
