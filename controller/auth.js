@@ -7,9 +7,9 @@ const { cookieJwtAuth } = require('../middleware/cookieJwtAuth');
 const app = express();
 
 app.post('/register', async (req, res) => {
-  const { login, password, birthday } = req.body;
+  const { login, password, birthday } = await req.body;
   const candidate = await User.findOne({ login });
-
+  console.log(login, password)
   if (candidate) {
     res.status(409).json({
       message: "Пользователь уже существует"
@@ -35,6 +35,8 @@ app.post('/register', async (req, res) => {
 
 app.post('/login', async (req, res) => {
   const { login, password } = req.body;
+
+
 
   const candidate = await User.findOne({ login });
   if (candidate) {

@@ -9,7 +9,6 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     require: true,
-    min: 6
   },
   avatar: {
     type: String,

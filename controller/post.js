@@ -33,7 +33,6 @@ app.post('/uploadImage', upload.single('image'), (req, res) => {
 app.post('/addPost', cookieJwtAuth, (req, res) => {
   const { title, content, image } = req.body;
   const token = req.cookies.token
-
   const decodedToken = jwt.decode(token, {
     complete: true
   });
