@@ -73,3 +73,4 @@ app.get('/getMe', cookieJwtAuth, (req, res) => {
 })
 
 module.exports = app;
+

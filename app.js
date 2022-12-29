@@ -19,7 +19,8 @@ app.use(cors());
 app.options("*", cors());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static("public/uploads"));
+app.use(express.static("public"));
+app.use('/image', express.static("public/uploads"))
 
 // routes
 app.use('/auth', auth);

@@ -2,13 +2,32 @@ const express = require('express');
 const Post = require('../db/postSchema');
 const { cookieJwtAuth } = require('../middleware/cookieJwtAuth');
 const jwt = require('jsonwebtoken');
+const multer = require('multer');
+const path = require('path');
 
 const app = express();
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './public/uploads');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname))
+  }
+});
+
+const upload = multer({ storage });
 
 app.get('/getAllPosts', (req, res) => {
   Post.find({}, (posts) => {
     res.status(200).json(posts)
   });
+})
+
+app.post('/uploadImage', upload.single('image'), (req, res) => {
+  res.json({
+    image: `http://localhost:8080/image/${req.file.filename}`
+  })
 })
 
 app.post('/addPost', cookieJwtAuth, (req, res) => {
