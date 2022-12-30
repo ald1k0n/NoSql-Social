@@ -8,6 +8,7 @@ const { cookieJwtAuth } = require('./middleware/cookieJwtAuth');
 const auth = require('./controller/auth')
 const post = require('./controller/post');
 const userDto = require('./controller/user');
+const comment = require('./controller/comment');
 
 mongoose.connect('mongodb://localhost:27017/social').then(() => console.log("Подключен")).catch(err => console.log(err))
 
@@ -26,6 +27,7 @@ app.use('/image', express.static("public/uploads"))
 app.use('/auth', auth);
 app.use('/posts', post)
 app.use('/user', userDto);
+app.use('/comments', comment);
 
 app.get('/', cookieJwtAuth, (req, res) => {
   res.status(200).json(req.cookies['token'])

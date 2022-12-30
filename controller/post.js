@@ -22,7 +22,7 @@ app.get('/getAllPosts', (req, res) => {
   Post.find({}, (posts) => {
     res.status(200).json(posts)
   });
-})
+});
 
 app.post('/uploadImage', upload.single('image'), (req, res) => {
   res.json({
@@ -70,9 +70,17 @@ app.put('/updatePost/:id', cookieJwtAuth, (req, res) => {
   )
 });
 
-app.delete('/deletePost/:id', cookieJwtAuth, (req, res) => {
-  Post.deleteOne({
-    _id: req.params.id
+app.delete('/deletePost/:id', cookieJwtAuth, async (req, res) => {
+  const token = req.cookies.token
+  const decodedToken = jwt.decode(token, {
+    complete: true
+  });
+
+  const { payload } = decodedToken;
+
+  await Post.deleteOne({
+    _id: req.params.id,
+    userId: payload.id
   }, err => {
     if (err) {
       res.status(500).json({
@@ -85,6 +93,16 @@ app.delete('/deletePost/:id', cookieJwtAuth, (req, res) => {
       });
     }
   })
-})
+});
+
+app.get('/posts/:id', cookieJwtAuth, async (req, res) => {
+  await Post.find({ _id: req.params.id }, (posts, err) => {
+    if (!err) {
+      res.status(200).json(posts)
+    } else {
+      res.status(404).json({ msg: "Что-то пошло не так" })
+    }
+  })
+});
 
 module.exports = app;
