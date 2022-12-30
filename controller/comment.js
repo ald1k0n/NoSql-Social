@@ -87,4 +87,4 @@ app.put('/comment/:id', cookieJwtAuth, async (req, res) => {
     })
 });
 
-module.export = app;
+module.exports = app;
