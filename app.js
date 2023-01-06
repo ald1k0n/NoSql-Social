@@ -37,7 +37,7 @@ app.use('/auth', auth);
 app.use('/posts', post)
 app.use('/user', userDto);
 app.use('/comments', comment);
-// app.use('/ws', chat);
+
 app.get('/', cookieJwtAuth, (req, res) => {
   res.status(200).json(req.cookies['token'])
 });

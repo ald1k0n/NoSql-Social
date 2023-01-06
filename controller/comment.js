@@ -7,8 +7,13 @@ const app = express();
 
 // Получение комментариев по id поста
 app.get('/comment/:id', async (req, res) => {
-  await Comment.find({ postId: req.params.id }, (com) => {
-    res.status(200).json(com);
+  await Comment.find({ postId: req.params.id }, (err, com) => {
+    if (!err) {
+      res.status(200).json(com);
+    } else {
+      res.status(400).json("Что то пошло не так")
+    }
+
   })
 });
 // Добавление комментария под пост 
