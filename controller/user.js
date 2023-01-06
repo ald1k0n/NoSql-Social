@@ -3,7 +3,17 @@ const jwt = require('jsonwebtoken');
 const express = require('express');
 const app = express();
 const User = require('../db/userSchemas');
-
+/**
+ * @swagger
+ * /user/addFriend/{id}:
+ *   put:
+ *     description: Добавить в друзья
+ *     responses:
+ *        401: 
+ *           description: Unauthorized
+ *        200:
+ *           description: Пользователь добавлен в друзья
+ */
 app.put('/addFriend/:id', cookieJwtAuth, (req, res) => {
   const token = req.cookies.token
 
@@ -28,7 +38,19 @@ app.put('/addFriend/:id', cookieJwtAuth, (req, res) => {
     })
   })
 });
-
+/**
+ * @swagger
+ * /user/removeFriend/{id}:
+ *   put:
+ *     description: Удаление из друзей
+ *     responses:
+ *        401: 
+ *           description: Unauthorized
+ *        204:
+ *           description: Успешно удален из друзей
+ *        500:
+ *           description: Не удалось удалить из друзей
+ */
 app.put('/removeFriend/:id', cookieJwtAuth, (req, res) => {
   const token = req.cookies.token
 

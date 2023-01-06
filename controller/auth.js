@@ -5,7 +5,19 @@ const express = require('express');
 const { cookieJwtAuth } = require('../middleware/cookieJwtAuth');
 
 const app = express();
-
+/**
+ * @swagger
+ * /auth/register:
+ *   post:
+ *     description: User registration
+ *     responses:
+ *       200:
+ *         description: Успешно создан аккаунт
+ *       400:
+ *         description: Ошибка
+ *       409:
+ *         description: Пользователь уже существует
+ */
 app.post('/register', async (req, res) => {
   const { login, password, birthday, avatar } = await req.body;
   const candidate = await User.findOne({ login });
@@ -34,6 +46,17 @@ app.post('/register', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     description: User login
+ *     responses:
+ *       200:
+ *         description: Токен
+ *       401:
+ *         description: Пароли не совпадают/Пользователь с данным логином не существует
+ */
 app.post('/login', async (req, res) => {
   const { login, password } = req.body;
 
@@ -63,7 +86,17 @@ app.post('/login', async (req, res) => {
     });
   }
 });
-
+/**
+ * @swagger
+ * /auth/getMe:
+ *   get:
+ *     description: Получение данных о себе
+ *     responses:
+ *       200:
+ *         description: Данные
+ *       401:
+ *         description: Unauthorized
+ */
 app.get('/getMe', cookieJwtAuth, (req, res) => {
   const token = req.cookies.token
   const decodedToken = jwt.decode(token, {
@@ -74,6 +107,14 @@ app.get('/getMe', cookieJwtAuth, (req, res) => {
   console.log(avatar)
   res.json({ login, id, friends, posts, role, avatar })
 })
+
+/**
+ * @swagger
+ * /auth/logout:
+ *   get:
+ *     description: Получение данных о себе
+ *     responses:
+ */
 
 app.get('/logout', (req, res) => {
   res.clearCookie('token');

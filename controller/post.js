@@ -17,7 +17,17 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
-
+/**
+ * @swagger
+ * /posts/getAllPosts:
+ *   get:
+ *     description: Получение всех постов
+ *     responses:
+ *        200: 
+ *           description: Посты
+ *        404:
+ *           description: Что то пошло не так
+ */
 app.get('/getAllPosts', (req, res) => {
   Post.find({}, (err, posts) => {
     if (!err) {
@@ -29,6 +39,15 @@ app.get('/getAllPosts', (req, res) => {
   });
 });
 
+/**
+ * @swagger
+ * /posts/uploadImage:
+ *   post:
+ *     description: Загрузка изображения на сервер
+ *     responses:
+ *        200: 
+ *           description: image
+ */
 app.post('/uploadImage', upload.single('image'), (req, res) => {
   console.log(req.file)
   res.json({
@@ -36,6 +55,18 @@ app.post('/uploadImage', upload.single('image'), (req, res) => {
   })
 })
 
+/**
+ * @swagger
+ * /posts/addPost:
+ *   post:
+ *     description: Создание поста
+ *     responses:
+ *        200: 
+ *           description: image
+ *        401:
+ *           description: Unauthorized
+ *
+ */
 app.post('/addPost', cookieJwtAuth, (req, res) => {
   const { title, content, image } = req.body;
   const token = req.cookies.token
@@ -56,6 +87,17 @@ app.post('/addPost', cookieJwtAuth, (req, res) => {
 
 
 //Фото поста не может быть удалено или изменено
+/**
+ * @swagger
+ * /posts/updatePost/{id}:
+ *   put:
+ *     description: Обновление поста (Фото поста не может быть удалено или изменено)
+ *     responses:
+ *        500: 
+ *           description: Ошибка
+ *        204:
+ *           description: Успешно обновлен пост
+ */
 app.put('/updatePost/:id', cookieJwtAuth, (req, res) => {
   const { title, content } = req.body;
   Post.updateOne({
@@ -76,6 +118,18 @@ app.put('/updatePost/:id', cookieJwtAuth, (req, res) => {
   )
 });
 
+
+/**
+ * @swagger
+ * /posts/deletePost/{id}:
+ *   delete:
+ *     description: Удаление поста
+ *     responses:
+ *        500: 
+ *           description: Ошибка
+ *        204:
+ *           description: Успешно удалён пост
+ */
 app.delete('/deletePost/:id', async (req, res) => {
   await Post.deleteOne({
     _id: req.params.id,
@@ -93,6 +147,17 @@ app.delete('/deletePost/:id', async (req, res) => {
   }).clone()
 });
 
+/**
+ * @swagger
+ * /posts/post/{id}:
+ *   get:
+ *     description: Получение поста по id
+ *     responses:
+ *        404: 
+ *           description: Что-то пошло не так
+ *        200:
+ *           description: Пост
+ */
 app.get('/post/:id', async (req, res) => {
   await Post.findOne({ _id: req.params.id }, (err, post) => {
     if (!err) {
@@ -103,6 +168,17 @@ app.get('/post/:id', async (req, res) => {
   }).clone().catch(err => console.log(err))
 });
 
+/**
+ * @swagger
+ * /posts/myPosts:
+ *   get:
+ *     description: Получение своих постов 
+ *     responses:
+ *        404: 
+ *           description: Что-то пошло не так
+ *        200:
+ *           description: Пост
+ */
 app.get('/myPosts', async (req, res) => {
   const token = req.cookies.token
   const decodedToken = jwt.decode(token, {

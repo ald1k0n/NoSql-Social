@@ -6,6 +6,17 @@ const { cookieJwtAuth } = require('../middleware/cookieJwtAuth');
 const app = express();
 
 // Получение комментариев по id поста
+/**
+ * @swagger
+ * /comments/comment/{id}:
+ *   get:
+ *     description: Получение комментариев по id поста
+ *     responses:
+ *        200: 
+ *           description: Комментарии
+ *        400:
+ *           description: Что то пошло не так
+ */
 app.get('/comment/:id', async (req, res) => {
   await Comment.find({ postId: req.params.id }, (err, com) => {
     if (!err) {
@@ -16,7 +27,18 @@ app.get('/comment/:id', async (req, res) => {
 
   })
 });
-// Добавление комментария под пост 
+// Добавление комментария под пост
+/**
+ * @swagger
+ * /comments/comment:
+ *   post:
+ *     description: Добавление комментария под пост
+ *     responses:
+ *        200: 
+ *           description: Коммент добавлен
+ *        401:
+ *           description: Unauthorized
+ */
 app.post('/comment', cookieJwtAuth, (req, res) => {
   const { comment, postId } = req.body;
   const token = req.cookies.token
@@ -37,6 +59,19 @@ app.post('/comment', cookieJwtAuth, (req, res) => {
 });
 
 //Удаление комментария под постом
+/**
+ * @swagger
+ * /comments/comment/{id}:
+ *   delete:
+ *     description: Удаление комментария под постом
+ *     responses:
+ *        200: 
+ *           description: Удален успешно
+ *        401:
+ *           description: Unauthorized
+ *        404:
+ *           description: Ошибка
+ */
 app.delete('/comment/:id', cookieJwtAuth, async (req, res) => {
   const token = req.cookies.token
   const decodedToken = jwt.decode(token, {
@@ -63,6 +98,19 @@ app.delete('/comment/:id', cookieJwtAuth, async (req, res) => {
 });
 
 // Обновление комментария под постом
+/**
+ * @swagger
+ * /comments/comment/{id}:
+ *   put:
+ *     description: Обновление комментария под постом
+ *     responses:
+ *        200: 
+ *           description: Обновлен
+ *        401:
+ *           description: Unauthorized
+ *        404:
+ *           description: Ошибка
+ */
 app.put('/comment/:id', cookieJwtAuth, async (req, res) => {
   const { comment } = req.body;
   const token = req.cookies.token

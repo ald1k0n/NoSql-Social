@@ -1,4 +1,6 @@
 const express = require('express');
+const jsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
@@ -38,6 +40,28 @@ app.use('/posts', post)
 app.use('/user', userDto);
 app.use('/comments', comment);
 
+// swaggerOptions
+const swaggerOptions = {
+  swaggerDefinition: {
+    info: {
+      title: 'Social Network API',
+      version: '0.0.1'
+    }
+  },
+  apis: ['./app.js', './controller/*.js']
+};
+
+const swaggerDocs = jsdoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
+/**
+ * @swagger
+ * /:
+ *   get:
+ *     description: checks the lifetime
+ *     responses:
+ *       200:
+ *         description: Returns token
+ */
 app.get('/', cookieJwtAuth, (req, res) => {
   res.status(200).json(req.cookies['token'])
 });
