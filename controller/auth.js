@@ -7,7 +7,7 @@ const { cookieJwtAuth } = require('../middleware/cookieJwtAuth');
 const app = express();
 
 app.post('/register', async (req, res) => {
-  const { login, password, birthday } = await req.body;
+  const { login, password, birthday, avatar } = await req.body;
   const candidate = await User.findOne({ login });
   console.log(login, password)
   if (candidate) {
@@ -20,7 +20,8 @@ app.post('/register', async (req, res) => {
     const user = new User({
       login,
       password: bcryptjs.hashSync(password, salt),
-      birthday
+      birthday,
+      avatar
     });
 
     try {
@@ -36,8 +37,6 @@ app.post('/register', async (req, res) => {
 app.post('/login', async (req, res) => {
   const { login, password } = req.body;
 
-
-
   const candidate = await User.findOne({ login });
   if (candidate) {
     const pass = bcryptjs.compareSync(password, candidate.password);
@@ -47,7 +46,8 @@ app.post('/login', async (req, res) => {
         id: candidate._id,
         friends: candidate.friends,
         posts: candidate.posts,
-        role: candidate.role
+        role: candidate.role,
+        avatar: candidate.avatar
       }, 'socialNetwork', { expiresIn: '1h' });
 
       res.status(200).cookie("token", token, {
@@ -70,8 +70,14 @@ app.get('/getMe', cookieJwtAuth, (req, res) => {
     complete: true
   });
   const { payload } = decodedToken;
-  const { login, id, friends, posts, role } = payload;
-  res.json({ login, id, friends, posts, role })
+  const { login, id, friends, posts, role, avatar } = payload;
+  console.log(avatar)
+  res.json({ login, id, friends, posts, role, avatar })
+})
+
+app.get('/logout', (req, res) => {
+  res.clearCookie('token');
+  res.json('Удален')
 })
 
 module.exports = app;

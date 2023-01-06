@@ -8,8 +8,7 @@ exports.cookieJwtAuth = (req, res, next) => {
     req.user = user;
     next();
   } catch (e) {
-    res.clearCookie("token");
-    return res.json({ message: e });
+    return res.status(404).json({ message: e });
   }
 }
 

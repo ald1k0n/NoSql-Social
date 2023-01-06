@@ -19,12 +19,18 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 app.get('/getAllPosts', (req, res) => {
-  Post.find({}, (posts) => {
-    res.status(200).json(posts)
+  Post.find({}, (err, posts) => {
+    if (!err) {
+      res.status(200).json(posts)
+    } else {
+      res.status(404).json({ msg: "Что то пошло не так" })
+    }
+
   });
 });
 
 app.post('/uploadImage', upload.single('image'), (req, res) => {
+  console.log(req.file)
   res.json({
     image: `http://localhost:8080/image/${req.file.filename}`
   })
@@ -70,17 +76,9 @@ app.put('/updatePost/:id', cookieJwtAuth, (req, res) => {
   )
 });
 
-app.delete('/deletePost/:id', cookieJwtAuth, async (req, res) => {
-  const token = req.cookies.token
-  const decodedToken = jwt.decode(token, {
-    complete: true
-  });
-
-  const { payload } = decodedToken;
-
+app.delete('/deletePost/:id', async (req, res) => {
   await Post.deleteOne({
     _id: req.params.id,
-    userId: payload.id
   }, err => {
     if (err) {
       res.status(500).json({
@@ -92,15 +90,32 @@ app.delete('/deletePost/:id', cookieJwtAuth, async (req, res) => {
         message: "Успешно удалён пост"
       });
     }
-  })
+  }).clone()
 });
 
-app.get('/posts/:id', cookieJwtAuth, async (req, res) => {
-  await Post.find({ _id: req.params.id }, (posts, err) => {
+app.get('/post/:id', async (req, res) => {
+  await Post.findOne({ _id: req.params.id }, (err, post) => {
     if (!err) {
-      res.status(200).json(posts)
+      res.status(200).json(post)
     } else {
       res.status(404).json({ msg: "Что-то пошло не так" })
+    }
+  }).clone().catch(err => console.log(err))
+});
+
+app.get('/myPosts', async (req, res) => {
+  const token = req.cookies.token
+  const decodedToken = jwt.decode(token, {
+    complete: true
+  });
+
+  const { payload } = decodedToken;
+
+  await Post.find({ _id: payload.id }, (err, post) => {
+    if (!err) {
+      res.status(200).json(post)
+    } else {
+      res.status(404).json({ msg: 'Что то пошло не так' })
     }
   })
 });
