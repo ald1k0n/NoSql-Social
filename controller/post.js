@@ -44,6 +44,11 @@ app.get('/getAllPosts', (req, res) => {
  * /posts/uploadImage:
  *   post:
  *     description: Загрузка изображения на сервер
+ *     parameters:
+ *        - in: formData
+ *          name: image
+ *          type: file
+ *          description: Изображение на сервер
  *     responses:
  *        200: 
  *           description: image
@@ -60,6 +65,18 @@ app.post('/uploadImage', upload.single('image'), (req, res) => {
  * /posts/addPost:
  *   post:
  *     description: Создание поста
+ *     parameters:
+ *        - in: body
+ *          name: post
+ *          schema:
+ *            type: object
+ *            properties:
+ *              title:
+ *                type: string
+ *              content:
+ *                type: string
+ *              image:
+ *                type: string
  *     responses:
  *        200: 
  *           description: image
@@ -92,6 +109,19 @@ app.post('/addPost', cookieJwtAuth, (req, res) => {
  * /posts/updatePost/{id}:
  *   put:
  *     description: Обновление поста (Фото поста не может быть удалено или изменено)
+ *     parameters:
+ *        - in: path
+ *          name: postId
+ *          type: string
+ *        - in: body
+ *          name: post
+ *          schema:
+ *            type: object
+ *            properties:
+ *              title:
+ *                type: string
+ *              content:
+ *                type: string
  *     responses:
  *        500: 
  *           description: Ошибка
@@ -124,6 +154,11 @@ app.put('/updatePost/:id', cookieJwtAuth, (req, res) => {
  * /posts/deletePost/{id}:
  *   delete:
  *     description: Удаление поста
+ *     parameters:
+ *        - in: path
+ *          name: postId
+ *          type: string
+ *          required: true
  *     responses:
  *        500: 
  *           description: Ошибка
@@ -152,6 +187,11 @@ app.delete('/deletePost/:id', async (req, res) => {
  * /posts/post/{id}:
  *   get:
  *     description: Получение поста по id
+ *     parameters:
+ *        - in: path
+ *          name: postId
+ *          type: string
+ *          required: true
  *     responses:
  *        404: 
  *           description: Что-то пошло не так

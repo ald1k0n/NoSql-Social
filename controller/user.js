@@ -8,6 +8,11 @@ const User = require('../db/userSchemas');
  * /user/addFriend/{id}:
  *   put:
  *     description: Добавить в друзья
+ *     parameters:
+ *        - in: path
+ *          name: friendId
+ *          type: string
+ *          required: true
  *     responses:
  *        401: 
  *           description: Unauthorized
@@ -43,6 +48,11 @@ app.put('/addFriend/:id', cookieJwtAuth, (req, res) => {
  * /user/removeFriend/{id}:
  *   put:
  *     description: Удаление из друзей
+ *     parameters:
+ *        - in: path
+ *          name: friendId
+ *          type: string
+ *          required: true
  *     responses:
  *        401: 
  *           description: Unauthorized
@@ -78,5 +88,56 @@ app.put('/removeFriend/:id', cookieJwtAuth, (req, res) => {
   )
 });
 
+
+/**
+ * @swagger
+ * /user/updateProfile:
+ *   put:
+ *     description: Обновление пользовательского профиля
+ *     parameters:
+ *        - in: body
+ *          name: updateBody
+ *          description: Фотографию через upload image грузить и сохранять в переменную и передать ссылку сюда
+ *          schema:
+ *            type: object
+ *            properties:
+ *              avatar:
+ *                type: string
+ *              birthday:
+ *                type: string
+ *     responses:
+ *        401: 
+ *           description: Unauthorized
+ *        204:
+ *           description: Успешно удален из друзей
+ *        500:
+ *           description: Не удалось удалить из друзей
+ */
+app.put('/updateProfile', cookieJwtAuth, (req, res) => {
+  const token = req.cookies.token
+  const { image, birthday } = req.body;
+  const decodedToken = jwt.decode(token, {
+    complete: true
+  });
+  const { payload } = decodedToken;
+
+  User.updateOne(
+    {
+      _id: payload.id
+    },
+    {
+      $set: {
+        avatar: image,
+        birthday: birthday
+      }
+    }, err => {
+      if (err) {
+        res.status(400).json({ message: "Ошибка обновления профиля" })
+      } else {
+        res.status(200).json({ message: "Профиль успешно обновлен" })
+      }
+    }
+  )
+});
 
 module.exports = app;

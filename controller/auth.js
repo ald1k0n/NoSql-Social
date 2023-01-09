@@ -10,6 +10,21 @@ const app = express();
  * /auth/register:
  *   post:
  *     description: User registration
+ *     parameters:
+ *        - in: body
+ *          name: user
+ *          description: Регистрация пользователя в аккаунт
+ *          schema:
+ *            type: object
+ *            properties:
+ *              login:
+ *                type: string
+ *              password:
+ *                type: string
+ *              birthday:
+ *                type: string
+ *              avatar:
+ *                type: string
  *     responses:
  *       200:
  *         description: Успешно создан аккаунт
@@ -51,6 +66,17 @@ app.post('/register', async (req, res) => {
  * /auth/login:
  *   post:
  *     description: User login
+ *     parameters:
+ *        - in: body
+ *          name: user
+ *          description: Вход пользователя в аккаунт
+ *          schema:
+ *            type: object
+ *            properties:
+ *              login:
+ *                type: string
+ *              password:
+ *                type: string
  *     responses:
  *       200:
  *         description: Токен
@@ -90,7 +116,7 @@ app.post('/login', async (req, res) => {
  * @swagger
  * /auth/getMe:
  *   get:
- *     description: Получение данных о себе
+ *     description: Получение данных о себе      
  *     responses:
  *       200:
  *         description: Данные
@@ -112,7 +138,7 @@ app.get('/getMe', cookieJwtAuth, (req, res) => {
  * @swagger
  * /auth/logout:
  *   get:
- *     description: Получение данных о себе
+ *     description: Выход из аккаунта
  *     responses:
  */
 

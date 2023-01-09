@@ -11,6 +11,14 @@ const app = express();
  * /comments/comment/{id}:
  *   get:
  *     description: Получение комментариев по id поста
+ *     parameters:
+ *      - in: path
+ *        name: commentId
+ *        type: string
+ *        required: true
+ *        description: Получение комментариев по id поста
+ *        
+ *            
  *     responses:
  *        200: 
  *           description: Комментарии
@@ -33,6 +41,17 @@ app.get('/comment/:id', async (req, res) => {
  * /comments/comment:
  *   post:
  *     description: Добавление комментария под пост
+ *     parameters:
+ *      - in: body
+ *        name: comment
+ *        description: Добавление комментария под пост
+ *        schema:
+ *          type: object
+ *          properties:
+ *            comment: 
+ *              type: string
+ *            postId:
+ *              type: string
  *     responses:
  *        200: 
  *           description: Коммент добавлен
@@ -64,6 +83,12 @@ app.post('/comment', cookieJwtAuth, (req, res) => {
  * /comments/comment/{id}:
  *   delete:
  *     description: Удаление комментария под постом
+ *     parameters:
+ *      - in: path
+ *        name: commentId
+ *        type: string
+ *        required: true
+ *        description: Удаление комментария под постом
  *     responses:
  *        200: 
  *           description: Удален успешно
@@ -103,6 +128,18 @@ app.delete('/comment/:id', cookieJwtAuth, async (req, res) => {
  * /comments/comment/{id}:
  *   put:
  *     description: Обновление комментария под постом
+ *     parameters:
+ *     - in: path
+ *       name: commentId
+ *       type: string
+ *       required: true
+ *     - in: body
+ *       name: commentUpdate
+ *       schema:
+ *          type: object
+ *          properties:
+ *              comment:
+ *                type: string
  *     responses:
  *        200: 
  *           description: Обновлен
