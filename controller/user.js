@@ -140,4 +140,32 @@ app.put('/updateProfile', cookieJwtAuth, (req, res) => {
   )
 });
 
+
+/**
+ * @swagger
+ * /user/{id}:
+ *   get:
+ *     description: Получение пользователя по id
+ *     parameters:
+ *        - in: path
+ *          name: userId
+ *          type: string
+ *          required: true
+ *     responses:
+ *        404: 
+ *           description: Что-то пошло не так
+ *        200:
+ *           description: User
+ */
+app.get('/:id', (req, res) => {
+  User.findOne({ _id: req.params.id }, (err, user) => {
+    if (err) {
+      res.json({ msg: "Что-то пошло не так" })
+    }
+    else {
+      res.status(200).json(user);
+    }
+  })
+});
+
 module.exports = app;
