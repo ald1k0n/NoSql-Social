@@ -19,29 +19,39 @@ const User = require('../db/userSchemas');
  *        200:
  *           description: Пользователь добавлен в друзья
  */
-app.put('/addFriend/:id', cookieJwtAuth, (req, res) => {
+app.put('/addFriend/:id', cookieJwtAuth, async (req, res) => {
   const token = req.cookies.token
 
   const decodedToken = jwt.decode(token, {
     complete: true
   });
   const { payload } = decodedToken;
-  User.updateOne({ _id: payload.id }, {
-    $push: {
-      friends: {
-        id: req.params.id
+
+  const friend = await User.findOne({ _id: req.params.id }, { login: 1, avatar: 1 });
+
+  if (friend) {
+    const friendData = {
+      id: friend._id.toString(),
+      login: friend.login,
+      avatar: friend.avatar
+    }
+    User.updateOne({ _id: payload.id }, {
+      $push: {
+        friends: friendData
       }
-    }
-  }, (err) => {
-    if (err) {
-      res.status(500).json({
-        message: "Произошло ошибка"
+    }, (err) => {
+      if (err) {
+        res.status(500).json({
+          message: "Произошло ошибка"
+        })
+      }
+      res.status(200).json({
+        message: "Всё ок"
       })
-    }
-    res.status(200).json({
-      message: "Всё ок"
     })
-  })
+  }
+
+
 });
 /**
  * @swagger
@@ -68,6 +78,8 @@ app.put('/removeFriend/:id', cookieJwtAuth, (req, res) => {
     complete: true
   });
   const { payload } = decodedToken;
+  console.log(payload.id);
+
   User.updateOne({
     _id: payload.id
   },
@@ -140,7 +152,6 @@ app.put('/updateProfile', cookieJwtAuth, (req, res) => {
   )
 });
 
-
 /**
  * @swagger
  * /user/{id}:
@@ -167,5 +178,7 @@ app.get('/:id', (req, res) => {
     }
   })
 });
+
+
 
 module.exports = app;

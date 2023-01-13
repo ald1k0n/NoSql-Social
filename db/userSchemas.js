@@ -20,10 +20,13 @@ const userSchema = new mongoose.Schema({
   friends: [
 
   ],
-
   role: {
     type: String,
     default: 'USER'
+  },
+  isOnline: {
+    type: Boolean,
+    default: false
   }
 });
 

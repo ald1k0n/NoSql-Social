@@ -87,6 +87,7 @@ app.post('/login', async (req, res) => {
   const { login, password } = req.body;
 
   const candidate = await User.findOne({ login });
+  console.log(candidate)
   if (candidate) {
     const pass = bcryptjs.compareSync(password, candidate.password);
     if (pass) {
@@ -96,7 +97,8 @@ app.post('/login', async (req, res) => {
         friends: candidate.friends,
         posts: candidate.posts,
         role: candidate.role,
-        avatar: candidate.avatar
+        avatar: candidate.avatar,
+        isOnline: candidate.isOnline
       }, 'socialNetwork', { expiresIn: '1h' });
 
       res.status(200).cookie("token", token, {

@@ -11,6 +11,7 @@ const Messages = require('./db/messages');
 const WSserver = require('express-ws')(app);
 const aWss = WSserver.getWss();
 const jwt = require('jsonwebtoken');
+const User = require('./db/userSchemas');
 
 // Routes
 const auth = require('./controller/auth')
@@ -66,57 +67,65 @@ app.get('/', cookieJwtAuth, (req, res) => {
   res.status(200).json(req.cookies['token'])
 });
 
-app.ws('/chat', (ws, req) => {
+app.ws('/online', (ws, req) => {
+  const token = req.cookies.token
+  const decodedToken = jwt.decode(token, {
+    complete: true
+  });
+
+  const { payload } = decodedToken;
+
   ws.on('message', msg => {
     msg = JSON.parse(msg);
-    const token = req.cookies.token
-    const decodedToken = jwt.decode(token, {
-      complete: true
-    });
-
-    const { payload } = decodedToken;
-
     switch (msg.method) {
-      case 'connect': {
-        ws.send(`Пользователь вошел в сеть`);
-
-        Messages.find({ secondUserId: msg.secondId, currentUserId: payload.id }, (err, message) => {
-          ws.send(message);
-        });
-        connectionHandler(ws, msg);
+      case 'online':
+        ws.send(JSON.stringify({ ...payload, isOnline: true }))
+        User.updateOne({ _id: payload.id }, {
+          $set: {
+            isOnline: true
+          }
+        }, (err) => {
+          if (err) {
+            console.log({
+              msg: "Ошибка"
+            })
+          }
+          else {
+            console.log({
+              msg: 'Онлайн'
+            })
+          }
+        }
+        )
         break;
-      }
-      case 'sendMessage': {
-        const { secondId, message } = req.body;
-        const msg = new Messages({
-          currentUserId: payload.id,
-          secondUserId: secondId,
-          message
-        });
-        msg.save();
-        broadcastConnection(ws, msg);
+      case 'offline':
+        ws.send(JSON.stringify({
+          message: 'offline'
+        }));
+        ws.send(JSON.stringify({ ...payload, isOnline: false }))
+        User.updateOne({ _id: payload.id }, {
+          $set: {
+            isOnline: false
+          }
+        }, (err) => {
+          if (err) {
+            console.log({
+              msg: "Ошибка"
+            })
+          }
+          else {
+            console.log({
+              msg: 'Оффлайн'
+            })
+          }
+        }
+        )
         break;
-      }
+      default:
+        break;
     }
   })
-});
-
-const connectionHandler = (ws, msg) => {
-  ws.user = msg.user;
-  console.log(ws.user, msg.user)
-  broadcastConnection(ws, msg);
-}
-
-const broadcastConnection = (ws, msg) => {
-  aWss.clients.forEach(client => {
-    if (client.id === msg.id) {
-      client.send(JSON.stringify({
-        msg
-      }))
-    }
-  })
-}
-
+})
 
 
 
