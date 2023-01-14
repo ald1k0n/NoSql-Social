@@ -79,24 +79,11 @@ app.ws('/online', (ws, req) => {
     msg = JSON.parse(msg);
     switch (msg.method) {
       case 'online':
-        ws.send(JSON.stringify({ ...payload, isOnline: true }))
         User.updateOne({ _id: payload.id }, {
           $set: {
             isOnline: true
           }
-        }, (err) => {
-          if (err) {
-            console.log({
-              msg: "Ошибка"
-            })
-          }
-          else {
-            console.log({
-              msg: 'Онлайн'
-            })
-          }
-        }
-        )
+        })
         break;
       case 'offline':
         ws.send(JSON.stringify({
@@ -107,19 +94,7 @@ app.ws('/online', (ws, req) => {
           $set: {
             isOnline: false
           }
-        }, (err) => {
-          if (err) {
-            console.log({
-              msg: "Ошибка"
-            })
-          }
-          else {
-            console.log({
-              msg: 'Оффлайн'
-            })
-          }
-        }
-        )
+        })
         break;
       default:
         break;
@@ -127,6 +102,44 @@ app.ws('/online', (ws, req) => {
   })
 })
 
+app.ws('/chat', (ws, req) => {
+  const token = req.cookies.token
+  const decodedToken = jwt.decode(token, {
+    complete: true
+  });
 
+  const { payload } = decodedToken;
+  ws.on('message', msg => {
+    msg = JSON.parse(msg);
+    switch (msg.method) {
+      case "chat": {
+        msg.id = payload.id;
+        connectionHandler(ws, msg)
+        break
+      }
+      case "message": {
+        broadcastConnection(ws, msg);
+        break;
+      }
+      default: break;
+    }
+  });
+});
+
+const connectionHandler = (ws, msg) => {
+  console.log(msg);
+  ws.id = msg.id
+  broadcastConnection(ws, msg)
+}
+
+const broadcastConnection = (ws, msg) => {
+  aWss.clients.forEach(client => {
+    if (client.id === msg.secondId) {
+      client.send(JSON.stringify({
+        msg: msg.msg
+      }))
+    }
+  })
+}
 
 app.listen(8080, () => console.log("Server started"))

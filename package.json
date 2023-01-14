@@ -14,5 +14,8 @@
 		"multer": "^1.4.5-lts.1",
 		"swagger-jsdoc": "^6.2.7",
 		"swagger-ui-express": "^4.6.0"
+	},
+	"devDependencies": {
+		"@types/express-ws": "^3.0.1"
 	}
 }
