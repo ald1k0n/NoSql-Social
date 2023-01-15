@@ -18,6 +18,7 @@ const auth = require('./controller/auth')
 const post = require('./controller/post');
 const userDto = require('./controller/user');
 const comment = require('./controller/comment');
+const chat = require('./controller/chat');
 // const chat = require('./controller/chat');
 
 mongoose.connect('mongodb://localhost:27017/social').then(() => console.log("Подключен")).catch(err => console.log(err))
@@ -40,6 +41,7 @@ app.use('/auth', auth);
 app.use('/posts', post)
 app.use('/user', userDto);
 app.use('/comments', comment);
+app.use('/chat', chat);
 
 // swaggerOptions
 const swaggerOptions = {
@@ -83,16 +85,28 @@ app.ws('/online', (ws, req) => {
           $set: {
             isOnline: true
           }
+        }, err => {
+          if (err) {
+            console.log(err)
+          } else {
+            console.log("Все ок")
+          }
         })
         break;
       case 'offline':
         ws.send(JSON.stringify({
           message: 'offline'
         }));
-        ws.send(JSON.stringify({ ...payload, isOnline: false }))
         User.updateOne({ _id: payload.id }, {
           $set: {
             isOnline: false
+          }
+        }, err => {
+          if (err) {
+            console.log(err)
+          }
+          else {
+            console.log("Всё работает")
           }
         })
         break;
@@ -102,7 +116,7 @@ app.ws('/online', (ws, req) => {
   })
 })
 
-app.ws('/chat', (ws, req) => {
+app.ws('/chats', (ws, req) => {
   const token = req.cookies.token
   const decodedToken = jwt.decode(token, {
     complete: true
@@ -114,11 +128,19 @@ app.ws('/chat', (ws, req) => {
     switch (msg.method) {
       case "chat": {
         msg.id = payload.id;
+        console.log(msg)
         connectionHandler(ws, msg)
-        break
+        break;
       }
       case "message": {
+        // console.log(msg);
         broadcastConnection(ws, msg);
+        const message = new Messages({
+          currentUserId: payload.id,
+          secondUserId: msg.secondId,
+          message: msg.msg
+        })
+        message.save();
         break;
       }
       default: break;
@@ -127,12 +149,13 @@ app.ws('/chat', (ws, req) => {
 });
 
 const connectionHandler = (ws, msg) => {
-  console.log(msg);
+  // console.log(msg);
   ws.id = msg.id
   broadcastConnection(ws, msg)
 }
 
 const broadcastConnection = (ws, msg) => {
+  // console.log(msg)
   aWss.clients.forEach(client => {
     if (client.id === msg.secondId) {
       client.send(JSON.stringify({
