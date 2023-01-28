@@ -94,7 +94,7 @@ app.post('/addPost', cookieJwtAuth, (req, res) => {
   const { payload } = decodedToken;
 
   const post = new Post({
-    userId: payload.id, title, content, image, date: Date.now()
+    userId: payload.id, login: payload.login, title, content, image, date: Date.now()
   });
   post.save();
   res.status(200).json({

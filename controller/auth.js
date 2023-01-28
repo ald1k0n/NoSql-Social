@@ -144,7 +144,7 @@ app.get('/getMe', cookieJwtAuth, (req, res) => {
  *     responses:
  */
 
-app.get('/logout', (req, res) => {
+app.post('/logout', (req, res) => {
   res.clearCookie('token');
   res.json('Удален')
 })
