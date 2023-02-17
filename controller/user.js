@@ -179,6 +179,29 @@ app.get('/:id', (req, res) => {
   })
 });
 
-
+/**
+ * @swagger
+ * /user/find/{login}:
+ *   get:
+ *     description: Получение пользователя по частям логина
+ *     parameters:
+ *        - in: path
+ *          name: userId
+ *          type: string
+ *          required: true
+ *     responses:
+ *        404: 
+ *           description: Что-то пошло не так
+ *        200:
+ *           description: Users
+ */
+app.get('/find/:username', (req, res) => {
+  User.find({
+    login: {
+      $regex: req.params.username,
+      $options: 'i'
+    }
+  }, (err, user) => !err ? res.status(200).json(user) : res.status(404).json({ err }))
+})
 
 module.exports = app;
