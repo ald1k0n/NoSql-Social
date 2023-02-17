@@ -25,14 +25,16 @@ const app = express();
  *        400:
  *           description: Что то пошло не так
  */
-app.get('/comment/:id', async (req, res) => {
-  await Comment.find({ postId: req.params.id }, (err, com) => {
+app.get('/comment/:id', (req, res) => {
+  Comment.find({ postId: req.params.id }, (err, com) => {
     if (!err) {
       res.status(200).json(com);
     } else {
       res.status(400).json("Что то пошло не так")
     }
 
+  }).sort({
+    _id: -1
   })
 });
 // Добавление комментария под пост
@@ -68,6 +70,7 @@ app.post('/comment', cookieJwtAuth, (req, res) => {
   const { payload } = decodedToken;
   const com = new Comment({
     userId: payload.id,
+    user: payload.login,
     comment,
     postId
   });
@@ -97,7 +100,7 @@ app.post('/comment', cookieJwtAuth, (req, res) => {
  *        404:
  *           description: Ошибка
  */
-app.delete('/comment/:id', cookieJwtAuth, async (req, res) => {
+app.delete('/comment/:id', cookieJwtAuth, (req, res) => {
   const token = req.cookies.token
   const decodedToken = jwt.decode(token, {
     complete: true
@@ -105,7 +108,7 @@ app.delete('/comment/:id', cookieJwtAuth, async (req, res) => {
 
   const { payload } = decodedToken;
 
-  await Comment.deleteOne({
+  Comment.deleteOne({
     postId: req.params.id,
     userId: payload.id
   }, err => {
@@ -148,7 +151,7 @@ app.delete('/comment/:id', cookieJwtAuth, async (req, res) => {
  *        404:
  *           description: Ошибка
  */
-app.put('/comment/:id', cookieJwtAuth, async (req, res) => {
+app.put('/comment/:id', cookieJwtAuth, (req, res) => {
   const { comment } = req.body;
   const token = req.cookies.token
   const decodedToken = jwt.decode(token, {
@@ -157,7 +160,7 @@ app.put('/comment/:id', cookieJwtAuth, async (req, res) => {
 
   const { payload } = decodedToken;
 
-  await Comment.updateOne({
+  Comment.updateOne({
     _id: req.params.id,
     userId: payload.id
   },

@@ -5,6 +5,10 @@ const commentSchema = new mongoose.Schema({
     type: String,
     require: true
   },
+  user: {
+    type: String,
+    require: true
+  },
   comment: {
     type: String
   },

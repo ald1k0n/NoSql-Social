@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express');
 const jsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
@@ -21,7 +22,9 @@ const comment = require('./controller/comment');
 const chat = require('./controller/chat');
 // const chat = require('./controller/chat');
 
-mongoose.connect('mongodb://localhost:27017/social').then(() => console.log("Подключен")).catch(err => console.log(err))
+mongoose.connect(process.env.MONGODB)
+  .then(() => console.log("Подключен"))
+  .catch(err => console.log(err))
 
 // MiddleWare
 app.use(express.json());

@@ -36,6 +36,8 @@ app.get('/getAllPosts', (req, res) => {
       res.status(404).json({ msg: "Что то пошло не так" })
     }
 
+  }).sort({
+    date: -1
   });
 });
 
