@@ -167,8 +167,8 @@ app.put('/updatePost/:id', cookieJwtAuth, (req, res) => {
  *        204:
  *           description: Успешно удалён пост
  */
-app.delete('/deletePost/:id', async (req, res) => {
-  await Post.deleteOne({
+app.delete('/deletePost/:id', (req, res) => {
+  Post.deleteOne({
     _id: req.params.id,
   }, err => {
     if (err) {
@@ -181,7 +181,7 @@ app.delete('/deletePost/:id', async (req, res) => {
         message: "Успешно удалён пост"
       });
     }
-  }).clone()
+  })
 });
 
 /**

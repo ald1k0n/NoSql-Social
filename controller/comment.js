@@ -5,6 +5,16 @@ const { cookieJwtAuth } = require('../middleware/cookieJwtAuth');
 
 const app = express();
 
+app.get('/:id', (req, res) => {
+  Comment.findOne({ _id: req.params.id }, (err, comment) => {
+    if (err) {
+      res.status(404).json(err)
+    } else {
+      res.json(comment)
+    }
+  })
+})
+
 // Получение комментариев по id поста
 /**
  * @swagger
@@ -100,7 +110,8 @@ app.post('/comment', cookieJwtAuth, (req, res) => {
  *        404:
  *           description: Ошибка
  */
-app.delete('/comment/:id', cookieJwtAuth, (req, res) => {
+app.delete('/comment/:id', (req, res) => {
+  const { comment } = req.body;
   const token = req.cookies.token
   const decodedToken = jwt.decode(token, {
     complete: true
@@ -109,7 +120,7 @@ app.delete('/comment/:id', cookieJwtAuth, (req, res) => {
   const { payload } = decodedToken;
 
   Comment.deleteOne({
-    postId: req.params.id,
+    _id: req.params.id,
     userId: payload.id
   }, err => {
     if (err) {

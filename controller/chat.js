@@ -18,10 +18,10 @@ app.get('/:id', cookieJwtAuth, async (req, res) => {
       { currentUserId: req.params.id, secondUserId: payload.id }]
   }, (err, messages) => {
     if (!err) {
-      console.log(messages)
+      res.status(200).json(messages)
     }
     else {
-      console.log(err)
+      res.status(500).json(err)
     }
   })
 });

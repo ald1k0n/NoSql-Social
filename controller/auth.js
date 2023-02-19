@@ -36,7 +36,6 @@ const app = express();
 app.post('/register', async (req, res) => {
   const { login, password, birthday, avatar } = await req.body;
   const candidate = await User.findOne({ login });
-  console.log(login, password)
   if (candidate) {
     res.status(409).json({
       message: "Пользователь уже существует"
@@ -87,7 +86,6 @@ app.post('/login', async (req, res) => {
   const { login, password } = req.body;
 
   const candidate = await User.findOne({ login });
-  console.log(candidate)
   if (candidate) {
     const pass = bcryptjs.compareSync(password, candidate.password);
     if (pass) {
@@ -132,7 +130,6 @@ app.get('/getMe', cookieJwtAuth, (req, res) => {
   });
   const { payload } = decodedToken;
   const { login, id, friends, posts, role, avatar } = payload;
-  console.log(avatar)
   res.json({ login, id, friends, posts, role, avatar })
 })
 

@@ -17,6 +17,7 @@
 		"swagger-ui-express": "^4.6.0"
 	},
 	"devDependencies": {
-		"@types/express-ws": "^3.0.1"
+		"@types/express-ws": "^3.0.1",
+		"netlify-cli": "^12.13.1"
 	}
 }
