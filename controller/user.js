@@ -99,7 +99,9 @@ app.put('/removeFriend/:id', cookieJwtAuth, (req, res) => {
     }
   )
 });
-
+app.get('/allUsers', (req, res) => {
+  User.find({}, (err, users) => !err ? res.status(200).json(users) : res.status(404).json(err))
+});
 
 /**
  * @swagger
@@ -203,5 +205,7 @@ app.get('/find/:username', (req, res) => {
     }
   }, (err, user) => !err ? res.status(200).json(user) : res.status(404).json({ err }))
 })
+
+
 
 module.exports = app;
