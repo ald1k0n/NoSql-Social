@@ -131,6 +131,7 @@ app.ws('/chats', (ws, req) => {
     switch (msg.method) {
       case "chat": {
         msg.id = payload.id;
+        msg.login = payload.login;
         console.log(msg)
         connectionHandler(ws, msg)
         break;
@@ -141,7 +142,8 @@ app.ws('/chats', (ws, req) => {
         const message = new Messages({
           currentUserId: payload.id,
           secondUserId: msg.secondId,
-          message: msg.msg
+          login: payload.login,
+          msg: msg.msg
         })
         message.save();
         break;
@@ -158,12 +160,10 @@ const connectionHandler = (ws, msg) => {
 }
 
 const broadcastConnection = (ws, msg) => {
-  // console.log(msg)
+  console.log(msg)
   aWss.clients.forEach(client => {
     if (client.id === msg.secondId) {
-      client.send(JSON.stringify({
-        msg: msg.msg
-      }))
+      client.send(JSON.stringify(msg))
     }
   })
 }

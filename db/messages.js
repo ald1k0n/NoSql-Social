@@ -9,7 +9,11 @@ const message = new Schema({
     type: String,
     require: true
   },
-  message: {
+  login: {
+    type: String,
+    require: true
+  },
+  msg: {
     type: String
   }
 });
