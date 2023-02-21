@@ -221,16 +221,17 @@ app.get('/post/:id', async (req, res) => {
  *        200:
  *           description: Пост
  */
-app.get('/myPosts', async (req, res) => {
+app.get('/myPosts', (req, res) => {
   const token = req.cookies.token
   const decodedToken = jwt.decode(token, {
     complete: true
   });
 
   const { payload } = decodedToken;
-
-  await Post.find({ _id: payload.id }, (err, post) => {
+  console.log(payload.id)
+  Post.find({ userId: payload.id }, (err, post) => {
     if (!err) {
+      // console.log(post)
       res.status(200).json(post)
     } else {
       res.status(404).json({ msg: 'Что то пошло не так' })
