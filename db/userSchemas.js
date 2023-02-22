@@ -17,9 +17,11 @@ const userSchema = new mongoose.Schema({
   birthday: {
     type: String
   },
-  friends: [
-
-  ],
+  friends: [{
+    id: String,
+    login: String,
+    avatar: String
+  }],
   role: {
     type: String,
     default: 'USER'

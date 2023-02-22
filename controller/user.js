@@ -36,7 +36,7 @@ app.put('/addFriend/:id', cookieJwtAuth, async (req, res) => {
       avatar: friend.avatar
     }
     User.updateOne({ _id: payload.id }, {
-      $push: {
+      $addToSet: {
         friends: friendData
       }
     }, (err) => {
